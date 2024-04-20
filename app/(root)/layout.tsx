@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import Topbar from "@/component/shared/Topbar";
+import LeftSidebar from "@/component/shared/LeftSidebar";
+import RightSidebar from "@/component/shared/RightSidebar";
+import Bottombar from "@/component/shared/Bottombar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +20,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Topbar />
+
+          <main>
+            <LeftSidebar />
+
+            <section className="main-container">
+              <div className="w-full max-w-4xl">
+                {children}
+              </div>
+            </section>
+
+            <RightSidebar />
+          </main>
+
+          <Bottombar />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
