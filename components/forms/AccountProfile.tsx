@@ -3,26 +3,22 @@
 import { z } from "zod"
 import { AccountProps } from "@/schema/types"
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserValidation } from "@/lib/validations/user";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { UserValidation } from "@/lib/validations/user"
 import Image from "next/image"
 import { Textarea } from "../ui/textarea"
 import { ChangeEvent, useState } from "react"
 import { isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
+import { updateUser } from "@/lib/actions/user.actions"
+import { usePathname, useRouter } from "next/navigation"
 
 const AccountProfile = ({ user, btnTitle }: AccountProps) => {
+    const pathname = usePathname();
+    const router = useRouter();
     const [files, setFiles] = useState<File[]>([]);
     const { startUpload } = useUploadThing("media");
     const form = useForm({
@@ -69,6 +65,21 @@ const AccountProfile = ({ user, btnTitle }: AccountProps) => {
                 values.profile_photo = imgRes[0].url;
             }
         }
+
+        await updateUser({
+            name: values.name,
+            path: pathname,
+            username: values.username,
+            userId: user.id,
+            bio: values.bio,
+            image: values.profile_photo,
+          });
+      
+          if (pathname === "/profile/edit") {
+            router.back();
+          } else {
+            router.push("/");
+          }
     }
 
 
